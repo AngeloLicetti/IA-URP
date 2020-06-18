@@ -1,0 +1,366 @@
+;EXAMEN 01 - LISP
+
+;Pregunta 01
+(DEFUN LLENAR (L E)
+		(SETQ L NIL E)
+		(PRINT "Ingrese los numeros")
+		(LOOP
+			(SETQ E (READ))
+			((MINUSP E)
+			)
+			(PUSH E L)
+		)
+		(REVERSE L)
+
+)
+
+(DEFUN MOSTRAR (L)
+    ((NULL L)
+	'FIN
+    )
+    (PRINT (CAR L))
+    (MOSTRAR (CDR L))
+)
+
+(DEFUN P01 ()
+    (LET ((L))
+	(PRINT "LLENAR LISTA")
+	(SETQ L (FUNCALL LLENAR))
+	(PRINT "MOSTRAR LISTA")
+	(MOSTRAR L)
+	(RETURN L)
+    )
+)
+
+
+;PREGUNTA 02
+(DEFUN SUMA-L (L)
+    ((NULL L)
+	 0
+    )
+    (+ (CAR L) (SUMA-L (CDR L))
+    )
+)
+
+(DEFUN PROMEDIO (L)
+    (/ (SUMA-L L) (LENGTH L))
+)
+(DEFUN P02 ()
+    (LET ((L))
+	(SETQ L (FUNCALL P01))
+	(PRINT "PROMEDIO: ")
+	(PROMEDIO L)
+    )
+)
+
+;PREGUNTA 03
+(DEFUN INVERTIR (L)
+    (INVERTIRAUX L NIL)
+)
+
+(DEFUN INVERTIRAUX (L LI)
+    ((NULL L)
+	LI
+    )
+    (PUSH (CAR L) LI)
+    (INVERTIRAUX (CDR L) LI)
+)
+
+(DEFUN P03 ()
+    (LET ((L))
+	(SETQ L (FUNCALL P01))
+	(PRINT "LISTA AL REVES:")
+	(INVERTIR L)
+    )
+)
+
+;PREGUNTA 04
+(DEFUN ORDENAR (L)
+    (ORDENARAUX L NIL NIL)
+)
+
+(DEFUN ORDENARAUX (L I P)
+    ((NULL L)
+	(APPEND (REVERSE I) (REVERSE P))
+    )
+    (
+	((EVENP (CAR  L))
+	    (PUSH (CAR L) P)
+	)
+	(PUSH (CAR L) I)
+    )
+    (ORDENARAUX (CDR L) I P)
+)
+
+(DEFUN P04 ()
+    (LET ((L))
+	 (SETQ L (FUNCALL P01))
+	 (PRINT "LISTA REORDENADA:")
+	 (ORDENAR L)
+    )
+)
+
+;PREGUNTA 05
+(DEFUN ESPRIMO (N)
+    (LET ((TOP) (D))
+	(SETQ TOP (FLOOR (/ N 2)))
+	(SETQ D 2)
+	(LOOP
+	    ((> D TOP)
+	    )
+	    ((ZEROP (MOD N D) )
+		(RETURN NIL)
+	    )
+	    (INCQ D)
+	)
+	(RETURN T)
+    )
+)
+
+(DEFUN PRIMOS (N)
+    (LET ((L))
+	(LOOP
+	    ((= N 2)
+	    )
+	    (
+		((ESPRIMO N)
+		    (PUSH N L)
+		)
+	    )
+	    (DECQ N)
+	)
+	(RETURN L)
+    )
+)
+
+;PREGUNTA 06
+(DEFUN PRODUCTOFACTORESPRIMOS (N)
+    ((<= N 2)
+	((= N 2) (RETURN (LIST 2)))
+	(RETURN NILL)
+    )
+    (LET ((L) (C 2))
+	(LOOP
+	    ((= N 1)
+	    )
+	    (
+		((ZEROP (MOD N C))
+		    (PUSH C L)
+		    (SETQ N (/ N C))
+		)
+		(INCQ C)
+	    )
+	)
+	(REVERSE L)
+    )
+)
+
+;PREGUNTA 07
+(DEFUN FACTORESPRIMOS (N)
+    (REMOVE-DUPLICATES (FUNCALL PRODUCTOFACTORESPRIMOS N))
+)
+
+;PREGUNTA 08
+(DEFUN MCD (L)
+    (LET ((POSIBLE-MCD (MENOR-ELEMENTO-DE L)))
+	(LOOP
+	    ((= POSIBLE-MCD 1)
+		(RETURN POSIBLE-MCD)
+	    )
+	    ((DIVIDE-A-TODOS POSIBLE-MCD L)
+		(RETURN POSIBLE-MCD)
+	    )
+	    (DECQ POSIBLE-MCD)
+	)
+    )
+)
+
+(DEFUN MENOR-ELEMENTO-DE (L)
+    (APPLY 'MIN L)
+)
+
+(DEFUN DIVIDE-A-TODOS (D L)
+    ((NULL L)
+	(RETURN T)
+    )
+    ((DIVIDE-A D (CAR L))
+      (RETURN (DIVIDE-A-TODOS D (CDR L)) )
+    )
+    (RETURN NIL)
+)
+
+(DEFUN DIVIDE-A (D X)
+    (ZEROP (MOD X D))
+)
+
+;PREGUNTA 09
+(DEFUN MCM (L)
+    (LET ((POSIBLE-MCM (MAYOR-ELEMENTO-DE L)))
+	(LOOP
+	    ((= POSIBLE-MCM 1000000000000)
+		(RETURN NILL)
+	    )
+	    ((DIVISIBLE-ENTRE-TODOS POSIBLE-MCM L)
+		(RETURN POSIBLE-MCM)
+	    )
+	    (INCQ POSIBLE-MCM)
+	)
+    )
+)
+
+(DEFUN MAYOR-ELEMENTO-DE (L)
+    (APPLY 'MAX L)
+)
+
+(DEFUN DIVISIBLE-ENTRE-TODOS (X LD)
+    ((NULL LD)
+	(RETURN T)
+    )
+    ((DIVIDE-A (CAR LD) X)
+	(RETURN (DIVISIBLE-ENTRE-TODOS X (CDR LD)) )
+    )
+    (RETURN NIL)
+)
+
+;PREGUNTA 10
+(DEFUN LLENAR-MATRIZ (N M)
+    (LET ((LI) (LJ) (I 0) (J 0) (E))
+	(LOOP
+	    ((= I N)
+		(RETURN (REVERSE LI))
+	    )
+	    (LOOP
+		((= J M)
+		    (PUSH (REVERSE LJ) LI)
+		    (SETQ J 0)
+		    (SETQ LJ NIL)
+		)
+		(PRINT "SIG:")
+		(PUSH (READ) LJ)
+		(INCQ J)
+	    )
+	    (INCQ I)
+	)
+    )
+)
+
+(DEFUN MOSTRAR-MATRIZ (L)
+    (PRINT "(")
+	(MOSTRAR L)
+	(PRINT ")")
+)
+
+(DEFUN P10 ()
+    (LET ((L))
+	(PRINT "LLENAR MATRIZ")
+	(SETQ L (FUNCALL LLENAR-MATRIZ 2 3))
+	(PRINT "MOSTRAR MATRIZ")
+	(MOSTRAR-MATRIZ L)
+	(PRINT "FIN")
+	(RETURN L)
+    )
+)
+
+;PREGUNTA 11
+(DEFUN SUMA-M (M)
+	((NULL M)
+	 0
+    )
+    (+ (SUMA-L (CAR M)) (SUMA-M (CDR M)) )
+)
+
+(DEFUN PROMEDIO-M (M)
+	(LET ((I) (J) (N))
+
+	(SETQ I (LENGTH  M))
+	(SETQ J (LENGTH (CAR M)))
+	(SETQ N (* I J))
+
+	(/ (SUMA-M M) N)
+	)
+)
+
+(DEFUN P11 ()
+	(LET ((M))
+	(SETQ M (FUNCALL P10))
+	(PRINT "PROMEDIO: ")
+	(PROMEDIO-M M)
+    )
+)
+
+;PREGUNTA 12
+(DEFUN PRODUCTO-M (M1 M2)
+	(LET ((MR) (I 0) (N (LENGTH MR)))
+	(LOOP
+		((= I N)
+		)
+		(PUSH (PRODUCTO-L (POP M1) (POP M2)) MR)
+		(INCQ I)
+	)
+	(RETURN (REVERSE MR))
+	)
+)
+
+(DEFUN PRODUCTO-L (L1 L2)
+	(LET ((LR) (I 0) (N (LENGTH L1)))
+	(LOOP
+		((= I N)
+		)
+		(PUSH (* (POP L1) (POP L2)) LR)
+		(INCQ I)
+	)
+	(RETURN (REVERSE LR))
+	)
+)
+
+(DEFUN P12 ()
+	(LET ((M1) (M2))
+	(PRINT "LLENAR MATRIZ 1")
+	(SETQ M1 (LLENAR-MATRIZ 2 3) )
+	(PRINT "LLENAR MATRIZ 2")
+	(SETQ M2 (LLENAR-MATRIZ 2 3) )
+	(PRINT "MATRIZ 1:")
+	(MOSTRAR-MATRIZ M1)
+	(PRINT "MATRIZ 2:")
+	(MOSTRAR-MATRIZ M2)
+	(PRINT "PRODUCTO MATRICIAL: ")
+	(MOSTRAR (PRODUCTO-M M1 M2))
+    )
+)
+
+;PROBLEMA 13
+;; (DEFUN ORDERNAR-MATRIZ (M)
+;;	(LET ((MORDENADA) (MINIMO) (I) (J))
+;;	(SETQ I (LENGTH  M))
+;;	(SETQ J (LENGTH (CAR M)))
+;;	(LOOP
+;;		((= I N)
+;;		)
+;;		(LOOP
+;;			((= J N)
+;;			)
+
+;;			(INCQ J)
+;;		)
+;;		(INCQ I)
+;;	)
+;;	(RETURN (REVERSE MORDENADA))
+;;	)
+;; )
+
+;PREGUNTA 20
+(DEFUN PASCAL (X)
+      (SETQ I 1 A '())
+      (LOOP ((> I X) (RETURN "FIN DEL TRIANGULO"))
+	    (SETQ J 0 S '())
+	    (SETQ A (PASCAL-AUX A S I J))
+	    (PRINT A)
+	    (SETQ I (+ I 1))
+      )
+)
+(DEFUN PASCAL-AUX (A S I J)
+       ((= J I) (RETURN S))
+       ((OR (ZEROP J) (= J (- I 1))) (PUSH 1 S) (PASCAL-AUX A S I (+ J 1)))
+       ((NOT (OR (ZEROP J) (= J (- I 1)))) (PUSH (+ (NTH J A) (NTH (- J 1) A)) S) (PASCAL-AUX A S I (+ J 1)))
+)
+

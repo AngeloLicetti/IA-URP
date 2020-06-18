@@ -1,0 +1,8 @@
+hanoi
+(DEFUN HANOI (X)
+       (HANOI-AUX X 1 2 3)
+)
+(DEFUN HANOI-AUX (X A B C)
+       ((= X 1) (PRINT `(MOVER DISCO DE ,A A ,C)) (TERPRI))
+       ((/= X 1) (HANOI-AUX (- X 1) A C B) (PRINT `(MOVER DISCO DE ,A A ,C)) (TERPRI) (HANOI-AUX (- X 1) B A C) (RETURN "EXITO"))
+)

@@ -1,0 +1,160 @@
+		     New Features in muLISP Version 7.30
+
+    This file summarizes features incorporated into muLISP-90 and muLISP XM
+(eXtended Memory) since the muLISP Reference Manual was printed.
+
+1.  The new function KEY-TRANSLATION [char, index] determines the line editing
+    routine called when a control key or extended function key is pressed
+    while using the muLISP line editor (see Section 5.10.5).  Page 388 in
+    Appendix H summarizes the index numbers of each of the line edit routines.
+
+2.  The new function PRINT-SCREEN [row, col] sends an image (text or graphics
+    depending on the current video mode) of the current muLISP window (see
+    Section 5.8.6) to the system printer.  The print begins <row> rows from
+    the top and <col> columns from the left side of the printed page.  The
+    printer type (0=plain, 1=HP Laserjet, 2=Epson nine-pin dot-matrix, 3=IBM
+    Proprinter, 4=HP Deskjet Color) is stored in the byte at offset 856
+    (0358H) in the muLISP base page (see Appendix H).  For example, to specify
+    an HP Laserjet printer, issue the command (CSMEMORY 856 1) before issuing
+    the PRINT-SCREEN command.
+
+    Printer information used by PRINT-SCREEN (WRITE-SCREEN also uses the
+    Orientation byte) is stored starting at offset 928 (03A0H) in the base
+    page.  CSMEMORY can be used to change the following data before issuing
+    the PRINT-SCREEN command:
+
+    03A0  928	DB	0	;ORIENTATION (0=PORTRAIT, 1=LANDSCAPE)
+    03A1  929	DB	0	;COLOR NUMBER (0-15) TO BE DISPLAYED UNIQUELY
+    03A2  930	DW	6	;PRINTER LINES PER INCH
+    03A4  932	DW	10	;PRINTER CHARACTERS PER INCH
+
+				;DATA FOR LASERJET & DESKJET PRINTERS
+    03A6  934	DW	20	;PAGE LENGTH IN HALF INCHES
+    03A8  936	DW	16	;PAGE WIDTH IN HALF INCHES
+    03AA  938	DW	75	;VERTICAL RESOLUTION IN DPI (75,100,150,300)
+    03AC  940	DW	75	;HORIZONTAL RESOLUTION IN DPI (75,100,150,300)
+
+				;DATA FOR DOTMATRIX PRINTERS
+    03AE  942	DW	21	;FORM-FEED PAPER PAGE LENGTH IN HALF INCHES
+    03B0  944	DW	17	;FORM-FEED PAPER PAGE WIDTH IN HALF INCHES
+    03B2  946	DW	60	;VERTICAL RESOLUTION IN DPI
+    03B4  948	DW	120/2	;HORIZONTAL RESOLUTION IN DPI
+
+				;DATA FOR IBM PROPRINTERS
+    03B6  950	DW	21	;FORM-FEED PAPER PAGE LENGTH IN HALF INCHES
+    03B8  952	DW	17	;FORM-FEED PAPER PAGE WIDTH IN HALF INCHES
+    03BA  954	DW	180	;VERTICAL RESOLUTION IN DPI
+    03BC  956	DW	180	;HORIZONTAL RESOLUTION IN DPI
+
+3.  The new function WRITE-SCREEN [sink] sends a graphics image of the current
+    muLISP window to <sink> in uncompressed TIF (Tagged Image Format) file
+    format and returns T.  If no <sink> is given, the image is sent to the
+    standard output sink (see Section 5.8.4).  If in a text rather than a
+    graphics video mode (see Appendix A), no action is taken and WRITE-SCREEN
+    simply returns NIL.
+
+4.  The function VIDEO-MODE (see Section 5.8.6) now supports nonstandard video
+    modes (e.g. super VGA) in addition to the video modes listed in Appendix A
+    of the manual.  The nonstandard mode must be supported by BIOS Interrupt
+    10H functions AH=0 through 0FH and function 1BH.  See the manual of your
+    graphics adapter card to determine the video modes properly supported by
+    Interrupt 10H.
+
+5.  If the second argument of the function VIDEO-MODE is nonNIL and the
+    computer has EGA or VGA graphics capability, an 8x8 text character
+    generator is used instead of the standard 8x16 (VGA) or 8x14 (EGA)
+    character generator.  This doubles or almost doubles the rows of text
+    that can be displayed on the screen.
+
+6.  Loading the file STATS.LSP displays the current size of the various
+    muLISP data spaces in bytes.  It should normally be loaded just after
+    issuing a SAVE or RECLAIM command.
+
+7.  After using the muLISP editor's or debugger's Options Display command to
+    change the display mode (see Chapter 7), pressing the F5 function key
+    switches back to the previous display mode.
+
+8.  In the text video modes (1, 2, 3, and 4), characters displayed on the
+    screen normally blink if the background is set between 8 and 15 inclusive
+    (see Appendix B).  EGA and VGA video cards provide the option of disabling
+    blinking thus allowing 16 instead of just 8 background colors.  If the new
+    control variable *BLINK-DISABLE* defined in WINDOWS.LSP is nonNIL,
+    blinking is disabled and 16 background colors are available for windows
+    applications.
+
+9.  The new static Source Code Analyzer included with muLISP provides a
+    mechanism to debug, document, and organize application programs.  See
+    Chapter 1 of the muLISP Reference Manual Supplement for details.
+
+10. The muLISP CLOS source file library provide the essential capabilities of
+    the Common LISP Object System including classes, instances, generic
+    functions, and methods.  See Chapter 2 of the muLISP Reference Manual
+    Supplement for details.
+
+11. The RAMCRAM.COM utility program for batch file processing is described
+    in the text file RAMCRAM.DOC.  The batch file EXAMPLE.BAT is an example
+    of its use.
+
+12. muLISP-90 supports the HP 95LX palmtop computer.  muLISP XM will NOT run
+    on this computer.  muLISP-90 includes the following HP 95LX support:
+
+    a.	muLISP recognizes the computer's 240x128 graphics video mode 32.
+
+    b.	muLISP conserves battery power by initiating "light sleep" when waiting
+	for keyboard input.
+
+    c.	The file HP95LX.LSP defines utility functions for detecting the HP
+	95LX computer, and for turning on and off the computer's serial port
+	to conserve battery power when not sending data to the serial port.
+
+    d.	The terminate-and-stay-resident program HP95CHAR.COM loads the standard
+	IBM 437 extended ASCII character set generator appropriate for the
+	HP 95LX computer's graphics video mode 32.  To display extended ASCII
+	characters (i.e. those above 127), run HP95CHAR before running muLISP.
+
+    e.	When run on a desktop computer, the terminate-and-stay-resident program
+	FORWARD.COM forwards the serial data sent by an HP 95LX to a printer
+	with a parallel port.  To use FORWARD.COM, do the following:
+
+	1)  Connect the cable supplied with the HP Connectivity Pack to the
+	    HP 95LX and the COM1 serial port on a desktop computer.
+
+	2)  Connect the printer to the LPT1 parallel port on the desktop
+	    computer.
+
+	3)  On the desktop computer, issue the MS-DOS command
+				MODE LPT1:
+	    to direct printer output to the parallel port.
+
+	4)  On the desktop computer, issue the MS-DOS command
+			  FORWARD COM1:9600 LPT1
+	    so data received from COM1 at 9600 baud is forwarded to LPT1.
+
+	5)  On the HP 95LX, use the system manager to set the baud rate to 9600.
+
+	6)  On the HP 95LX running muLISP, send text to the printer by opening
+	    for output a file with the device name 'PRN.
+
+13. muLISP-90 supports the NEC PC-9801 series of computers popular in Japan.
+    muLISP XM will NOT run on these computers.	The utility file NECGRAPH.LSP
+    included with muLISP-90 defines the following PC-9801 graphics functions:
+
+	GRAPHICS-INIT			GRAPHICS-SCREEN
+	GRAPHICS-WINDOW 		GRAPHICS-COLOR
+	GRAPHICS-CLS			GRAPHICS-PLOT-DOT
+	GRAPHICS-PLOT-LINE		GRAPHICS-PLOT-BOX
+	GRAPHICS-PLOT-CIRCLE		GRAPHICS-READ-DOT
+
+14. Support is provided for writing network applications in muLISP:
+    a.	When a file is opened, bits 4-6 of the byte at offset 017Eh (=382d) in
+	the muLISP basepage determine the files share mode (000=compatible,
+	001=read/write access denied, 010=write access denied, 011=read access
+	denied, 100=full access permitted).  Also if bit 7 of this byte is set,
+	the file is not inherited by any child process.
+    b.	When a file is opened, if bit 5 of the byte at offset 017Fh (=383d) is
+	set, the interrupt 24h error handler is not used to handle file errors.
+	If by 6 of this byte is set, the file is updated immediately after
+	each write.
+    c.	The functions INPUT-FILE-P and OUTPUT-FILE-P return the MS-DOS file
+	handle for the file (i.e. a number between 0 and 65535 inclusive).
+

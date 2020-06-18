@@ -1,0 +1,50 @@
+		  The RAMCRAM.COM Utility Program
+
+     The RAMCRAM.COM utility program is for use with MS-DOS batch
+files, such as AUTOEXEC.BAT.  RAMCRAM is copyrighted in 1991 by Soft
+Warehouse, Inc. and may not copied or distributed without the
+express written permission of Soft Warehouse, Inc.
+
+     The RAMCRAM utility program performs the following services for
+batch file processing.	The first two services are only for use on
+the HP 95LX computer.  The third service can be used on any PC
+compatible computer.  The last two services can be used on any MS-
+DOS computer.
+
+RAMCRAM A xxxx y  --  increases the space available for running an
+     MS-DOS program.  First it reduces the amount of free drive C
+     RAM disk memory to  y  8K blocks.	Next it performs the warm
+     reboot of the HP 95LX computer that is required after resizing
+     RAM disk memory.  Finally if there are at least  xxxx
+     paragraphs (i.e. 16*xxxx bytes) of RAM memory available for
+     running the MS-DOS program, it returns an exit code of 0;
+     otherwise it returns an exit code of 1.  This exit code can be
+     used by  IF ERRORLEVEL  commands in a batch file to determine
+     if there is sufficient memory to run the MS-DOS program.  Both
+     y and xxxx should be hexadecimal numbers.
+
+RAMCRAM B  --  restores the drive C RAM disk to its original size
+     and performs the necessary reboot of the computer.  This
+     command should be done in a batch file just before returning
+     control to the HP 95LX system manager.  (The MS-DOS command
+     $SYSMGR returns control to the system manager.)
+
+RAMCRAM C n  --  if n is a number in hexadecimal number less than
+     256, sets the video mode to n.  Otherwise, it returns an exit
+     code equal to the current video mode.
+
+RAMCRAM D  --  displays the number of kilobytes of system RAM
+     available for running DOS application programs.
+
+RAMCRAM E  --  if running on an HP 95LX computer, it returns an exit
+     code of 0.  Otherwise, it returns an exit code of 1.
+
+RAMCRAM n  --  where n is a digit between 1 and 9 inclusive,
+     displays the message "Enter number of desired option:" and
+     waits for the user to press a number between 1 and n inclusive.
+     It returns the number pressed as an exit code.  This exit code
+     can be used by  IF ERRORLEVEL  commands in a batch file.
+
+     The batch file EXAMPLE.BAT included on the muLISP distribution
+diskette provides examples of the use of the RAMCRAM utility program.
+

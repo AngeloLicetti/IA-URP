@@ -1,0 +1,135 @@
+;Traten de hacer el llenar recursivo me dio pereza xd
+(defun test()
+   (let ((a) (b))
+	(setq a 2)
+	(print a)
+   )
+)
+
+(defun llenar()
+    (PRINT "Inserte los numeros:")
+    (setq L NIL)
+    (loop ((minusp (setq E (read))))
+	      (push E L)
+    )
+    (setq L (reverse L)) ;
+)
+
+(defun mostrar(L)
+    ((null L) 'FIN)
+    (PRINT (car L))
+    (mostrar (cdr L))
+)
+
+
+(defun suma(L)
+    ((null L) 0)
+    (+ (car L) (suma (cdr L)))
+)
+
+(defun promedio(L)
+    (/ (suma L) (length L))
+)
+
+
+(defun invertir(L)
+   (invertiraux L NIL)
+)
+
+(defun invertiraux(L I)
+   ((null L) I)
+   (push (car L) I)
+   (invertiraux (cdr L) I)
+)
+
+
+
+(defun ordena(L)
+   (ordenaaux L NIL NIL)
+)
+
+(defun ordenaaux(L I P)
+   ((null L) (append (reverse I) (reverse P)))
+   (progn ((= (mod (car L) 2) 0) (push (car L) P))
+	  (push (car L) I)
+   )
+   (ordenaaux (cdr L) I P)
+)
+
+
+
+(defun pprimos (N)
+   ((<= N  1) 0)
+   (pprimosaux N 2 2 NIL)
+)
+
+(defun pprimosaux (N A D P)
+   ((> A N) P)
+   (progn ((= (mod A D) 0) (progn((= A D) (push A P))) (setq D 2 A (+ A 1)))
+	  (setq D (+ D 1))
+   )
+   (pprimosaux N A D P)
+)
+
+
+
+(defun proprimo (N)
+   ((<= N 1) 0)
+   (proprimoaux N 2)
+)
+
+(defun proprimoaux(N D)
+   ((= N 1) 'FIN)
+   (progn ((= (mod N D) 0) (PRINC D) (PRINC " ") (proprimoaux (/ N D) D))
+	  (proprimoaux N (+ D 1))
+   )
+)
+
+
+
+
+(defun facprimos (N)
+   ((< N 1) 0)
+   (facprimosaux N 2 -1)
+)
+
+(defun facprimosaux (N A C)
+   ((= N 1) 'FIN)
+   (progn ((= (mod N A) 0)
+	   (progn ((< C 0) (PRINC A) (PRINC " ") (setq C 1)))
+	   (facprimosaux (/ N A) A C))
+	  (facprimosaux N (+ A 1) -1)
+   )
+)
+
+
+
+
+(defun mcd (L)
+   ((null L) 0)
+   (mcdaux L (mini L))
+)
+
+(defun mcdaux (L A)
+   ((= A 1) 1)
+   ((dividetodo L (length L) A) A)
+   (mcdaux L (- A 1))
+)
+
+(defun dividetodo (L I D)
+   ((= I 0) T)
+   ((/= (mod (nth (- I 1) L) D) 0) NIL)
+   (dividetodo L (- I 1) D)
+)
+
+(defun mini (L)
+   (miniaux L (nth (- (length L) 1) L) (length L))
+)
+
+(defun miniaux (L A N)
+   ((= N 0) A)
+   (progn ((> A (nth (- N 1) L)) (miniaux L (nth (- N 1) L) (- N 1)))
+	  (miniaux L A (- N 1))
+   )
+)
+
