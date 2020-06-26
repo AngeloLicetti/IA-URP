@@ -1,0 +1,120 @@
+;"IDENT.LSP". PROGRAMA DE AGENTE REFLEJO BIEN INFORMADO DE LO QUE PASA.
+;IDENTIFICA EMPLEANDO ENCADENAMIENTO REGRESIVO.
+;POR FINES PRACTICOS, EL CONOCIMIENTO ESTA EN EL CODIGO FUENTE.
+
+(defun IDENT (R LO)
+  (setq R (lee_r)  LO (lee_lo))
+  (do ((XPOS '() '()) (XNEG '() '()))
+      (procesa)
+      (mensaje "otra vez (S/N)? ")
+      ((eq 'N (read)))))
+
+(defun PROCESA ()
+  (do ((LOX LO) (OBJ))
+      ((null LOX) (mensaje "no se puede determinar el objetivo"))
+      ((prueba (setq OBJ (pop LOX)))
+       (mensaje "el objetivo puede ser " OBJ))))
+
+(defun PRUEBA (OBJ REGLAS)
+  ((listp OBJ)
+   (eval OBJ))
+  ((member OBJ XPOS))
+  ((member OBJ XNEG) NIL)
+  (setq REGLAS (remove-if '(LAMBDA (X)
+				   (not (eq OBJ (cadr X))))
+			   R))
+  ((null REGLAS)
+   (mensaje OBJ " (S/N)? ")
+   (salva OBJ (eq 'S (read))))
+  (loop ((null REGLAS)
+         (salva OBJ NIL))	;devuelve NIL
+	((prueba-y (car (pop REGLAS)))
+         (salva OBJ 'T))))
+
+(defun PRUEBA-Y (L E)
+  (loop ((null L))
+        ( ((eq (car L) '*NO*)
+           (pop L)
+           ((prueba (pop L))
+            (return NIL)))
+	  ((not (prueba (pop L)))
+           (return NIL)) )))
+
+(defun SALVA (OBJ VAL)
+  ( ((null VAL) (push OBJ XNEG))
+    (push OBJ XPOS) )
+  VAL)
+
+(defun LEE_LO ()
+  '(DERECHO
+    INGENIERIA
+    MILITAR))
+
+(defun LEE_R ()
+  (defun EJERCICIO-NUMERICO-1 ()
+    (mensaje "1 + 1 = ")
+    (= 2 (read)))
+
+  (defun EJERCICIO-COMPRENSION-DE-DELCTURA-1 ()
+    (mensaje "de que color fue el caballo blanco de San Martin? ")
+    (eq BLANCO (read)))
+
+  (defun MENSAJE L
+    ((null L) NIL)
+    (terpri)
+    (loop ((null L))
+          (princ (pop L))))
+
+  '( ((NUMERADO 						;{ 1 }
+       "TE GUSTA EL DISENIO"
+       "TE GUSTA INVENTAR")
+      ;==>
+      INGENIERIA)
+
+     (("TE DISGUSTAN LAS INJUSTICIAS DE LA VIDA"		;{ 2 }
+       LETRADO)
+      ;==>
+      DERECHO)
+
+     (("HAS PERTENECIDO A UN COLEGIO MILITAR"			;{ 3a }
+       "TE GUSTO EL COLEGIO MILITAR")
+      ;==>
+      MILITAR)
+
+     (("CUANDO ERAS COLEGIAL, TE GUSTABA USAR UNIFORME"         ;{ 3b }
+       LIDER
+       NUMERADO
+       LETRADO
+       "TE GUSTA EL DEPORTE"
+       "AMAS A TU PATRIA")
+      ;==>
+      MILITAR)
+
+     (("TE GUSTAN LOS NUMEROS"                                  ;{ 4 }
+       (EJERCICIO-NUMERICO-1))
+      ;==>
+      NUMERADO)
+
+     (("TE GUSTA LEER"                                          ;{ 5 }
+       (EJERCICIO-COMPRENSION-DE-DELCTURA-1))
+      ;==>
+      LETRADO)
+
+     (("TE GUSTA DIRIGIR GENTE"                                 ;{ 6 }
+       "ACEPTAS RECIBIR INDICACIONES"
+       "HAS DIRIGIDO ALGUN GRUPO HUMANO"
+       *NO* NERVIOSO)
+      ;==>
+      LIDER)
+
+     (("TU SABES QUE ERES NERVIOSO")				;{ 7a }
+      ;==>
+      NERVIOSO)
+
+     (("A VECES TE SUDA LA MANO"                                ;{ 7b }
+       "TENDRIAS MUCHAS DIFICULTA PARA HABLAR EN PUBLICO")
+      ;==>
+      NERVIOSO) ))
+
+(rds)
+

@@ -1,32 +1,80 @@
-/*****************************************************************************
+domains
+	ls = symbol*
 
-		Copyright (c) 1984 - 2000 Prolog Development Center A/S
-
- Project:  
- FileName: CH04E14.PRO
- Purpose: 
- Written by: PDC
- Modifyed by: Eugene Akimov
- Comments: 
-******************************************************************************/
-
+database
+	regla(ls)
+	obj(symbol)
+	xpos(symbol)
+	xneg(symbol)
+	
 predicates
-  action(integer) - procedure (i)
+	ejecuta(symbol)
+	procede(ls)
+	imprime_resultado
+	encadenamiento(symbol)
+	prueba_y(ls)
+	prueba_reglas(symbol)
 
 clauses
-  action(1):-!,
-	nl,
-	write("You typed 1.").
-  action(2):-!,
-	nl,
-	write("You typed two.").
-  action(3):-!,
-	nl,
-	write("Three was what you typed.").
-  action(_):-nl,
-	write("I don't know that number!").
+	ejecuta(Na) :-
+		existfile(Na), !,
+		consult(Na),
+		procede([zebra,jirafa,guepardo,tigre]),
+		imprime_resultado.
+	ejecuta(Na) :-
+		write("no existe el archivo ", Na).
+		
+	procede([]) :-
+		retract(obj(_)), !.
+	procede([]) :- !.
+	procede([Obj|_]) :-
+		assert(obj(Obj)),
+		encadenamiento(Obj), !.
+	procede([Obj|T]) :-
+		retract(obj(Obj)), !,
+		procede(T).
 
+	encadenamiento(Obj) :-
+		xpos(Obj), !.
+	encadenamiento(Obj) :-
+		xneg(Obj), !, fail.
+	encadenamiento(Obj) :-
+		regla([Obj|_]), !,
+		prueba_reglas(Obj),
+		%prueba_y(T),
+		assert(xpos(Obj)).
+	encadenamiento(Obj) :-
+		regla([Obj|_]), !,
+		assert(xneg(Obj)), fail.
+	encadenamiento(Obj) :-
+		write(Obj, "? "),
+		readchar(C),
+		write(C), nl,
+		C = 's', !,
+		assert(xpos(Obj)).
+	encadenamiento(Obj) :-
+		assert(xneg(Obj)),
+		fail.
+		
+	prueba_reglas(Obj) :-
+		regla([Obj|T]),	%backtracking
+		prueba_y(T), !.
+		
+	prueba_y([]) :- !.
+	prueba_y(["*no*",H|T]) :-
+		NOT(encadenamiento(H)), !,
+		prueba_y(T).
+	prueba_y(["*no*",_|_]) :- !, fail.
+	prueba_y([H|T]) :-
+		encadenamiento(H), !,
+		prueba_y(T).
+
+	imprime_resultado :-
+		obj(Obj), !,
+		write("el objetivo puede ser ", Obj).
+	imprime_resultado :-
+		write("no se pudo alcanzar un objetivo").
 goal
-  write("Type a number from 1 to 3: "),
-  readint(Num),
-  action(Num),nl.
+  %write("nombre de archivo: "),
+  %readln(Na),
+  ejecuta("C:\\Users\\Pc\\source\\repos\\urp-code\\ia\\e_regresivo\\anim.dat").
