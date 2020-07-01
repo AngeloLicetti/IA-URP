@@ -1,8 +1,0 @@
-regla(["mamifero","da leche","tiene mamas"])
-regla(["carnívoro","tiene dientes afilados","tiene ojos frontales","tiene garras"])
-regla(["carnívoro","come carne"])
-regla(["ungulado","mamifero","es rumiante","tiene pezuña"])
-regla(["jirafa","ungulado","tiene manchas negras","tiene cuello largo","tiene patas largas"])
-regla(["zebra","ungulado","tiene rayas negras"])
-regla(["guepardo","mamifero","*no*","ungulado","carnívoro","tiene color leonado","tiene manchas negras"])
-regla(["tigre","carnívoro","mamifero","tiene color leonado","tiene rayas negras"])
