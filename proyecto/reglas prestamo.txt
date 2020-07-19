@@ -1,0 +1,18 @@
+es apto?
+	mayor de edad
+	no viejo (<69)
+	no moroso
+	fuente de ingresos regular
+
+fuente de ingresos regular
+	trabajador estable
+	o emprendedor rentable
+
+trabajador estable
+	antiguedad <25 meses
+
+nivel de ingresos
+
+historial crediticio
+
+cuota inicial

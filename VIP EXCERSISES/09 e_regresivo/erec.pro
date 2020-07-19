@@ -77,4 +77,4 @@ clauses
 goal
   %write("nombre de archivo: "),
   %readln(Na),
-  ejecuta("C:\\Users\\Pc\\source\\repos\\urp-code\\ia\\e_regresivo\\anim.dat").
+  ejecuta("C:\\Users\\Angelo\\source\\repos\\repos-urp\\IA-URP\\VIP EXCERSISES\\09 e_regresivo\\anim.dat").
