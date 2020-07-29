@@ -20,6 +20,10 @@ public class JSRuleInferenceEngine {
     private Bindings params;
 
     private RuleInferenceEngine ruleEngine = new KieRuleInferenceEngine();
+    
+    public RuleInferenceEngine getRie(){
+        return ruleEngine;
+    }
 
     public void addFact(String name, Object value){
         ruleEngine.addFact(name, value.toString());

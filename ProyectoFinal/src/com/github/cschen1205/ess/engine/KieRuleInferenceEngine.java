@@ -42,8 +42,15 @@ public class KieRuleInferenceEngine implements RuleInferenceEngine {
     //backward chaining
     @Override public Clause infer(String goalVariable, List<Clause> unproved_conditions){
         Clause conclusion = null;
-
+        List<Rule> goal_stack = new ArrayList<>();
         for(Rule rule : rules){
+            Clause consequent = rule.getConsequent();
+            if(consequent.variable==goalVariable){
+                goal_stack.add(rule);
+            }
+        }
+        
+        for(Rule rule : goal_stack){
             rule.firstAntecedent();
             boolean goalReached = true;
             while(rule.hasNextAntecedent()){

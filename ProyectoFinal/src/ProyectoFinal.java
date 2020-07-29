@@ -1,95 +1,75 @@
 import com.github.cschen1205.ess.engine.*;
 import com.github.cschen1205.ess.enums.*;
 import com.github.cschen1205.ess.js.*;
+import static com.sun.corba.se.impl.util.Utility.printStackTrace;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+//import java.nio.file.Paths;
+import java.util.Scanner;
+import java.util.Vector;
 
 public class ProyectoFinal {
     public static void main(String[] args) {
-        testForwardChain();
+        BackwardChainWithNullMemory();
     }
     
-    public static void testForwardChain()
+    public static void BackwardChainWithNullMemory()
     {
-        RuleInferenceEngine rie=getInferenceEngine();
-        rie.addFact(new EqualsClause("num_wheels", "4"));
-        rie.addFact(new EqualsClause("motor", "yes"));
-        rie.addFact(new EqualsClause("num_doors", "3"));
-        rie.addFact(new EqualsClause("size", "medium"));
+        JSRuleInferenceEngine jsRie = cargarArchivoDeReglas();
+        RuleInferenceEngine rie = jsRie.getRie();
+        
+        System.out.println("Inferencia con memoria de trabajo inicialmente vacía:");
+        System.out.println("-----------------------------------------------------:");
+        rie.clearFacts();
 
-        System.out.println("before inference");
+        Vector<Clause> unproved_conditions= new Vector<>();
+
+        Clause conclusion=null;
+        while(conclusion==null)
+        {
+            conclusion=rie.infer("vehiculo", unproved_conditions);
+            if(conclusion==null)
+            {
+                if(unproved_conditions.size()==0)
+                {
+                    break;
+                }
+                Clause c=unproved_conditions.get(0);
+                System.out.println("Necesito saber si "+c);
+                unproved_conditions.clear();
+                String value=showInputDialog("Por favor responde esto: "+c.getVariable()+"?");
+                rie.addFact(new EqualsClause(c.getVariable(), value));
+                System.out.println("-----------------------------------------------------:");
+            }
+        }
+
+        System.out.println("Conclusión: "+conclusion);
+        System.out.println("Memoria de trabajo: ");
         System.out.println(rie.getFacts());
-        System.out.println();
+    }
 
-        rie.infer(); //forward chain
-
-        System.out.println("after inference");
-        System.out.println(rie.getFacts());
-        System.out.println();
+    private static String showInputDialog(String question) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print(question + " ");
+        return scanner.next();
     }
     
-    private static RuleInferenceEngine getInferenceEngine()
-    {
-        RuleInferenceEngine rie=new KieRuleInferenceEngine();
-
-        Rule rule=new Rule("Bicycle");
-        rule.addAntecedent(new EqualsClause("vehicleType", "cycle"));
-        rule.addAntecedent(new EqualsClause("num_wheels", "2"));
-        rule.addAntecedent(new EqualsClause("motor", "no"));
-        rule.setConsequent(new EqualsClause("vehicle", "Bicycle"));
-        rie.addRule(rule);
-
-        rule=new Rule("Tricycle");
-        rule.addAntecedent(new EqualsClause("vehicleType", "cycle"));
-        rule.addAntecedent(new EqualsClause("num_wheels", "3"));
-        rule.addAntecedent(new EqualsClause("motor", "no"));
-        rule.setConsequent(new EqualsClause("vehicle", "Tricycle"));
-        rie.addRule(rule);
-
-        rule=new Rule("Motorcycle");
-        rule.addAntecedent(new EqualsClause("vehicleType", "cycle"));
-        rule.addAntecedent(new EqualsClause("num_wheels", "2"));
-        rule.addAntecedent(new EqualsClause("motor", "yes"));
-        rule.setConsequent(new EqualsClause("vehicle", "Motorcycle"));
-        rie.addRule(rule);
-
-        rule=new Rule("SportsCar");
-        rule.addAntecedent(new EqualsClause("vehicleType", "automobile"));
-        rule.addAntecedent(new EqualsClause("size", "medium"));
-        rule.addAntecedent(new EqualsClause("num_doors", "2"));
-        rule.setConsequent(new EqualsClause("vehicle", "Sports_Car"));
-        rie.addRule(rule);
-
-        rule=new Rule("Sedan");
-        rule.addAntecedent(new EqualsClause("vehicleType", "automobile"));
-        rule.addAntecedent(new EqualsClause("size", "medium"));
-        rule.addAntecedent(new EqualsClause("num_doors", "4"));
-        rule.setConsequent(new EqualsClause("vehicle", "Sedan"));
-        rie.addRule(rule);
-
-        rule=new Rule("MiniVan");
-        rule.addAntecedent(new EqualsClause("vehicleType", "automobile"));
-        rule.addAntecedent(new EqualsClause("size", "medium"));
-        rule.addAntecedent(new EqualsClause("num_doors", "3"));
-        rule.setConsequent(new EqualsClause("vehicle", "MiniVan"));
-        rie.addRule(rule);
-
-        rule=new Rule("SUV");
-        rule.addAntecedent(new EqualsClause("vehicleType", "automobile"));
-        rule.addAntecedent(new EqualsClause("size", "large"));
-        rule.addAntecedent(new EqualsClause("num_doors", "4"));
-        rule.setConsequent(new EqualsClause("vehicle", "SUV"));
-        rie.addRule(rule);
-
-        rule=new Rule("Cycle");
-        rule.addAntecedent(new LessClause("num_wheels", "4"));
-        rule.setConsequent(new EqualsClause("vehicleType", "cycle"));
-        rie.addRule(rule);
-
-        rule=new Rule("Automobile");
-        rule.addAntecedent(new EqualsClause("num_wheels", "4"));
-        rule.addAntecedent(new EqualsClause("motor", "yes"));
-        rule.setConsequent(new EqualsClause("vehicleType", "automobile"));
-        rie.addRule(rule);
-
-        return rie;
+    private static JSRuleInferenceEngine cargarArchivoDeReglas(){
+        JSRuleInferenceEngine engine = new JSRuleInferenceEngine();
+        try{
+            String currentDirectory = System.getProperty("user.dir");
+            String fileName = currentDirectory + "\\src\\archivoDeReglas.js";
+            File tempFile = new File(fileName);
+            boolean exists = tempFile.exists();
+            String jsContent = new String ( Files.readAllBytes( Paths.get(fileName) ) );
+            engine.loadString(jsContent);
+            engine.buildRules();
+        }
+        catch (Exception e){
+            printStackTrace();
+        }
+        return engine;
     }
 }
